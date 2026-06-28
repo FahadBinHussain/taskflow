@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/ui/Toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import {
   CheckSquare,
   FolderKanban,
@@ -19,10 +20,20 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function AuthPage() {
+function AuthPage() {
   const { user, login } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const joinToken = searchParams.get("joinToken");
+  const joinTokenRef = React.useRef<string | null>(joinToken);
+
+  useEffect(() => {
+    if (user && joinTokenRef.current) {
+      router.push(`/join?token=${joinTokenRef.current}`);
+      joinTokenRef.current = null;
+    }
+  }, [user, router]);
 
   const [mode, setMode] = useState<"signin" | "signup" | "reset" | "sent">("signin");
   const [isAdminRole, setIsAdminRole] = useState(false);
@@ -333,5 +344,13 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthPageWrapper() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950" />}>
+      <AuthPage />
+    </Suspense>
   );
 }

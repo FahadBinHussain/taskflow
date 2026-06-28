@@ -3,6 +3,7 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
 import { CheckSquare, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
@@ -26,10 +27,20 @@ function JoinContent() {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/invites/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + api.getToken() },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to accept invite");
       toast("You have successfully joined the project!");
-      router.push("/projects");
-    }, 800);
+      setTimeout(() => router.push("/projects"), 800);
+    } catch (err: any) {
+      toast(err.message || "Failed to accept invite");
+      setLoading(false);
+    }
   };
 
   return (

@@ -146,6 +146,7 @@ export const api = {
     invite: (id: string, body: { email: string }) => request<{ message: string }>("POST", `/projects/${id}/invite`, body),
     removeMember: (id: string, userId: string) => request<{ message: string }>("DELETE", `/projects/${id}/members/${userId}`),
     leave: (id: string) => request<{ message: string }>("DELETE", `/projects/${id}/leave`),
+    acceptInvite: (body: { token: string }) => request<{ message: string; project: { id: string; name: string } }>("POST", "/invites/accept", body),
   },
 
   users: {
