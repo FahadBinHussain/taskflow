@@ -1,5 +1,16 @@
 import nodemailer from "nodemailer";
 
+// Default sender shown on all outbound TaskFlow emails.
+export const EMAIL_FROM = process.env.EMAIL_FROM || '"TaskFlow" <noreply@taskflow.app>';
+
+/**
+ * Normalize an email address for lookup and delivery.
+ * Lowercases and trims so `User@Example.com` matches the stored value.
+ */
+export function normalizeEmail(email: string): string {
+  return email.toLowerCase().trim();
+}
+
 let transporter: nodemailer.Transporter | null = null;
 
 async function getTransporter() {
@@ -43,8 +54,8 @@ export async function sendEmail({ to, subject, html }: { to: string; subject: st
   try {
     const t = await getTransporter();
     const info = await t.sendMail({
-      from: process.env.EMAIL_FROM || '"TaskFlow" <noreply@taskflow.app>',
-      to,
+      from: EMAIL_FROM,
+      to: normalizeEmail(to),
       subject,
       html,
     });
@@ -57,6 +68,10 @@ export async function sendEmail({ to, subject, html }: { to: string; subject: st
   }
 }
 
+/**
+ * Send a password-reset email with a time-limited link.
+ * The caller generates the token and expiry; this only delivers the message.
+ */
 export async function sendPasswordResetEmail(email: string, name: string, resetLink: string) {
   return sendEmail({
     to: email,

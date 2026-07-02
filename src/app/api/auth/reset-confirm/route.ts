@@ -4,10 +4,13 @@ import { users, passwordResets } from "@/db/schema";
 import { eq, and, gt } from "drizzle-orm";
 import { hashPassword } from "@/lib/auth";
 
+// Minimum accepted length for a new password chosen via reset link.
+const MIN_PASSWORD_LENGTH = 6;
+
 export async function POST(req: NextRequest) {
   try {
     const { token, password } = await req.json();
-    if (!token || !password || password.length < 6) {
+    if (!token || !password || password.length < MIN_PASSWORD_LENGTH) {
       return NextResponse.json({ error: "Valid token and password (6+ characters) required." }, { status: 400 });
     }
 

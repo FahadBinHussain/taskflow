@@ -13,10 +13,15 @@ export interface JWTPayload {
   role: string;
 }
 
+/** Sign a session JWT for the given user id and role. */
 export function signToken(payload: JWTPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
+/**
+ * Verify a session JWT. Returns the payload, or null when
+ * the token is missing, malformed, or expired.
+ */
 export function verifyToken(token: string): JWTPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as JWTPayload;
@@ -25,10 +30,12 @@ export function verifyToken(token: string): JWTPayload | null {
   }
 }
 
+/** Hash a plaintext password with bcrypt (cost 10). */
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
+/** Compare a plaintext password against a stored bcrypt hash. */
 export async function comparePassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }

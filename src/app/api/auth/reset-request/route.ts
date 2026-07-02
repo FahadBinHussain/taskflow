@@ -3,7 +3,10 @@ import { db } from "@/db";
 import { users, passwordResets } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { sendPasswordResetEmail } from "@/lib/email";
+import { sendPasswordResetEmail, normalizeEmail } from "@/lib/email";
+
+// Reset tokens stay valid for 30 minutes after issue.
+const RESET_TOKEN_TTL_MS = 30 * 60 * 1000;
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,13 +15,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Valid email is required." }, { status: 400 });
     }
 
-    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedEmail = normalizeEmail(email);
     const [user] = await db.select().from(users).where(eq(users.email, normalizedEmail)).limit(1);
 
     // Prevent email enumeration: always return success message
     if (user) {
       const token = uuidv4();
-      const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MS).toISOString();
 
       await db.insert(passwordResets).values({
         id: uuidv4(),
