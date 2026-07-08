@@ -2,11 +2,13 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
     --background: #090d16;
     --foreground: #f8fafc;
   }
 
   [data-theme="light"] {
+    color-scheme: light;
     --background: #f8fafc;
     --foreground: #090d16;
   }
@@ -32,4 +34,14 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.5);
+}
+
+/* Dashboard polish: readable text selection and visible keyboard focus */
+::selection {
+  background: rgba(99, 102, 241, 0.4);
+}
+
+:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.7);
+  outline-offset: 2px;
 }

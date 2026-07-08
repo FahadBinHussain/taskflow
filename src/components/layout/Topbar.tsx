@@ -118,6 +118,8 @@ export function Topbar({ onToggleSidebar, onSearch }: TopbarProps) {
           onClick={toggleTheme}
           className="p-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition"
           title="Toggle theme"
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          aria-pressed={theme === "dark"}
         >
           {theme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-400" />}
         </button>

@@ -19,17 +19,25 @@ export function StatCard({ label, value, hint, pct = 0, barColor = "indigo", ico
     purple: "bg-purple-500",
   };
 
+  // Clamp progress to a valid percentage so overflow can't break layout.
+  const clampedPct = Math.min(Math.max(pct, 0), 100);
+
   return (
     <div className="relative overflow-hidden bg-slate-900/70 dark:bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 rounded-2xl p-5 shadow-sm transition-all duration-200">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</span>
-        {icon && <div className="text-slate-400">{icon}</div>}
+        {icon && <div className="text-slate-400" aria-hidden="true">{icon}</div>}
       </div>
-      <div className="text-3xl font-bold tracking-tight text-white mb-3">{value}</div>
+      <div className="text-3xl font-bold tracking-tight text-white mb-3" role="status" aria-label={`${label}: ${value}`}>{value}</div>
       <div className="w-full bg-slate-800/80 rounded-full h-1.5 mb-2 overflow-hidden">
         <div
           className={cn("h-full rounded-full transition-all duration-500", barStyles[barColor])}
-          style={{ width: `${Math.min(Math.max(pct, 0), 100)}%` }}
+          style={{ width: `${clampedPct}%` }}
+          role="progressbar"
+          aria-valuenow={Math.round(clampedPct)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`${label} progress`}
         />
       </div>
       <div className="text-xs text-slate-400">{hint}</div>
