@@ -282,6 +282,8 @@ export default function AdminPage() {
                 <div className="pt-3 border-t border-slate-800/60 flex items-center justify-end gap-2">
                   <button
                     onClick={() => handleApproveFlag(f.id)}
+                    title="Mark as safe and remove from the moderation queue"
+                    aria-label={`Mark flagged item as not spam: ${f.content.slice(0, 60)}`}
                     className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1.5"
                   >
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
@@ -289,6 +291,8 @@ export default function AdminPage() {
                   </button>
                   <button
                     onClick={() => handleRemoveFlagged(f.id)}
+                    title="Permanently delete this flagged content"
+                    aria-label={`Delete flagged content: ${f.content.slice(0, 60)}`}
                     className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-rose-300 hover:text-rose-200 bg-rose-950/80 hover:bg-rose-900/80 border border-rose-800/60 transition flex items-center gap-1.5"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
