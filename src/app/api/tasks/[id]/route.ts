@@ -28,13 +28,31 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       updatedAt: new Date().toISOString(),
     };
 
-    if (body.title !== undefined) updateData.title = body.title.trim();
+    // Only accept known fields; reject empty titles and invalid enums.
+    if (body.title !== undefined) {
+      if (!body.title.trim()) {
+        return NextResponse.json({ error: "Task title cannot be empty." }, { status: 400 });
+      }
+      updateData.title = body.title.trim();
+    }
     if (body.description !== undefined) updateData.description = body.description;
     if (body.project_id !== undefined) updateData.projectId = body.project_id;
     if (body.owner_id !== undefined) updateData.ownerId = body.owner_id;
     if (body.due_date !== undefined) updateData.dueDate = body.due_date;
-    if (body.priority !== undefined) updateData.priority = body.priority;
-    if (body.status !== undefined) updateData.status = body.status;
+    if (body.priority !== undefined) {
+      const validPriorities = ["Low", "Medium", "High", "Urgent"];
+      if (!validPriorities.includes(body.priority)) {
+        return NextResponse.json({ error: "Invalid priority level." }, { status: 400 });
+      }
+      updateData.priority = body.priority;
+    }
+    if (body.status !== undefined) {
+      const validStatuses = ["todo", "doing", "done"];
+      if (!validStatuses.includes(body.status)) {
+        return NextResponse.json({ error: "Invalid task status." }, { status: 400 });
+      }
+      updateData.status = body.status;
+    }
 
     const [updated] = await db.update(tasks).set(updateData).where(eq(tasks.id, id)).returning();
 

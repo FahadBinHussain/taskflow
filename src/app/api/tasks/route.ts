@@ -85,8 +85,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { title, description, project_id, owner_id, due_date, priority, status } = body;
 
-    if (!title || !project_id || !due_date) {
+    if (!title || !title.trim() || !project_id || !due_date) {
       return NextResponse.json({ error: "title, project_id and due_date are required." }, { status: 400 });
+    }
+
+    // Guard against unsupported priority/status values slipping into the db.
+    const validPriorities = ["Low", "Medium", "High", "Urgent"];
+    const validStatuses = ["todo", "doing", "done"];
+    if (priority && !validPriorities.includes(priority)) {
+      return NextResponse.json({ error: "Invalid priority level." }, { status: 400 });
+    }
+    if (status && !validStatuses.includes(status)) {
+      return NextResponse.json({ error: "Invalid task status." }, { status: 400 });
     }
 
     // Verify membership
