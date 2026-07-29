@@ -5,9 +5,10 @@ interface BadgeProps {
   children: React.ReactNode;
   variant?: "accent" | "warning" | "danger" | "success" | "neutral" | "admin" | "member";
   className?: string;
+  title?: string;
 }
 
-export function Badge({ children, variant = "neutral", className }: BadgeProps) {
+export function Badge({ children, variant = "neutral", className, title }: BadgeProps) {
   const variantStyles = {
     accent: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
     warning: "bg-amber-500/10 text-amber-400 border-amber-500/30",
@@ -20,6 +21,7 @@ export function Badge({ children, variant = "neutral", className }: BadgeProps) 
 
   return (
     <span
+      title={title}
       className={cn(
         "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors",
         variantStyles[variant],

@@ -121,6 +121,8 @@ function TasksContent() {
           <div className="flex items-center p-1 bg-slate-900 border border-slate-800 rounded-xl">
             <button
               onClick={() => setView("list")}
+              aria-pressed={view === "list"}
+              title="Show tasks as a list"
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition",
                 view === "list" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"
@@ -131,6 +133,8 @@ function TasksContent() {
             </button>
             <button
               onClick={() => setView("board")}
+              aria-pressed={view === "board"}
+              title="Show tasks as a kanban board"
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition",
                 view === "board" ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"
@@ -358,9 +362,21 @@ function TasksContent() {
               </table>
             </div>
           ) : (
-            <div className="py-16 text-center text-xs text-slate-400">
+            <div className="py-16 text-center text-xs text-slate-400 space-y-3">
               <CheckCircle2 className="w-8 h-8 text-slate-700 mx-auto mb-2" />
-              No tasks found matching your filter criteria.
+              {hasActiveFilters ? (
+                <>
+                  <p>No tasks found matching your filter criteria.</p>
+                  <button
+                    onClick={resetFilters}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-indigo-200 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition"
+                  >
+                    Clear all filters
+                  </button>
+                </>
+              ) : (
+                <p>No tasks yet. Create your first task to get started.</p>
+              )}
             </div>
           )}
         </div>
