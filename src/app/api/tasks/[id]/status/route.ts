@@ -5,6 +5,11 @@ import { eq, and, ne } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { getAuthenticatedUser } from "@/lib/auth";
 
+/**
+ * PATCH /api/tasks/[id]/status
+ * Sets an explicit status when `body.status` is valid, otherwise toggles
+ * between done and doing. Completing a task notifies other project members.
+ */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getAuthenticatedUser(req);
@@ -25,7 +30,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const body = await req.json().catch(() => ({}));
-    const newStatus = body.status || (task.status === "done" ? "doing" : "done");
+    const validStatuses = ["todo", "doing", "done"];
+    const requestedStatus = body.status;
+
+    // Reject unknown status values instead of writing them to the db.
+    if (requestedStatus !== undefined && !validStatuses.includes(requestedStatus)) {
+      return NextResponse.json({ error: "Invalid task status." }, { status: 400 });
+    }
+
+    const newStatus = requestedStatus || (task.status === "done" ? "doing" : "done");
 
     const [updated] = await db
       .update(tasks)

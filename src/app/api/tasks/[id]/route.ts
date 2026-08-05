@@ -98,7 +98,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     await db.delete(tasks).where(eq(tasks.id, id));
 
-    return NextResponse.json({ message: "Task deleted." });
+    return NextResponse.json({ message: "Task deleted permanently.", id });
   } catch (error: any) {
     console.error("[DELETE /api/tasks/[id] Error]", error);
     return NextResponse.json({ error: error.message || "Failed to delete task" }, { status: 500 });
