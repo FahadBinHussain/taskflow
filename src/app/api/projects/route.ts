@@ -91,13 +91,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Project name is required." }, { status: 400 });
     }
 
+    // Keep names tidy and cap the blurb so cards render consistently.
+    const cleanName = name.trim().slice(0, 80);
+    const cleanBlurb = (blurb || "").trim().slice(0, 200);
+
     const id = uuidv4();
     const [newProject] = await db
       .insert(projects)
       .values({
         id,
-        name: name.trim(),
-        blurb: blurb || "",
+        name: cleanName,
+        blurb: cleanBlurb,
         hue: hue || "accent",
         createdBy: user.id,
       })
