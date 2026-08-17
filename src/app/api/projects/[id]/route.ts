@@ -47,8 +47,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const body = await req.json();
     const updateData: any = {};
-    if (body.name !== undefined) updateData.name = body.name.trim();
-    if (body.blurb !== undefined) updateData.blurb = body.blurb;
+    if (body.name !== undefined) {
+      if (!body.name.trim()) {
+        return NextResponse.json({ error: "Project name cannot be empty." }, { status: 400 });
+      }
+      updateData.name = body.name.trim().slice(0, 80);
+    }
+    if (body.blurb !== undefined) updateData.blurb = body.blurb.trim().slice(0, 200);
     if (body.hue !== undefined) updateData.hue = body.hue;
 
     const [updated] = await db.update(projects).set(updateData).where(eq(projects.id, id)).returning();

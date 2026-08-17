@@ -298,7 +298,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           <div className="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm text-white">Team Members</h3>
-              <span className="text-xs text-slate-400 font-medium">{project.members.length}</span>
+              <span
+                className="text-xs text-slate-400 font-medium"
+                aria-label={`${project.members.length} active members`}
+              >
+                {project.members.length} active
+              </span>
             </div>
 
             <div className="divide-y divide-slate-800/60">
@@ -320,7 +325,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                       <button
                         onClick={() => handleRemoveMember(m.id)}
                         className="p-1 rounded text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition"
-                        title="Remove member"
+                        title={`Remove ${m.name} from project`}
+                        aria-label={`Remove ${m.name} from project`}
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
