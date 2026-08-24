@@ -27,11 +27,16 @@ export async function DELETE(
       return NextResponse.json({ error: "Access denied." }, { status: 403 });
     }
 
+    // Creators can't be removed by others; they must delete the project instead.
+    if (project.createdBy === userId && project.createdBy !== user.id && user.role !== "Admin") {
+      return NextResponse.json({ error: "The project creator cannot be removed." }, { status: 403 });
+    }
+
     await db
       .delete(projectMembers)
       .where(and(eq(projectMembers.projectId, id), eq(projectMembers.userId, userId)));
 
-    return NextResponse.json({ message: "Member removed." });
+    return NextResponse.json({ message: "Member removed from project.", userId });
   } catch (error: any) {
     console.error("[DELETE Member Error]", error);
     return NextResponse.json({ error: error.message || "Failed to remove member" }, { status: 500 });

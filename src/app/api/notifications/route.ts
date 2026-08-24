@@ -9,12 +9,17 @@ export async function GET(req: NextRequest) {
     const user = await getAuthenticatedUser(req);
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    // Latest first, capped so the dropdown stays fast.
+    const { searchParams } = new URL(req.url);
+    const rawLimit = parseInt(searchParams.get("limit") || "50", 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 100);
+
     const userNotifs = await db
       .select()
       .from(notifications)
       .where(eq(notifications.userId, user.id))
       .orderBy(desc(notifications.createdAt))
-      .limit(50);
+      .limit(limit);
 
     return NextResponse.json(userNotifs);
   } catch (error: any) {
